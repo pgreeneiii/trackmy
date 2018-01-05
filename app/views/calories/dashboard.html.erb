@@ -1,11 +1,11 @@
 <div class="row">
    <div class="col-md-6">
       <div class="mb-2">
-         <%= line_chart @cum_deficit, colors: ['#33cc33'] %>
+         <%= line_chart @cum_data, colors: ['#33cc33', 'black'], title: 'Cumulative Consumption & Deficit' %>
       </div>
 
       <div class="mb-2">
-         <%= line_chart @cum_consumed %>
+         <%= line_chart @milestone_data, title: 'Cumulative Projected Weight Loss' %>
       </div>
    </div>
    <div class=" col-md-offset-1 col-md-4">

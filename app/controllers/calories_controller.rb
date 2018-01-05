@@ -7,26 +7,40 @@ class CaloriesController < ApplicationController
 
       cals_consumed = []
       cals_deficit = []
+      proj_loss = []
       cum_cals = 0
       cum_def = 0
+      cum_loss = 0
+      milestone = 0
 
       cals.each do |cal|
          cum_cals += cal.consumed
          cum_def += cal.deficit
+         milestone += cal.deficit
+
+
+         if milestone >= 3500
+            milestone = 3500-milestone
+            cum_loss += 1
+         end
 
          data = [cal.date, cum_cals]
          cals_consumed.push(data)
 
          data = [cal.date, cum_def]
          cals_deficit.push(data)
+
+         data = [cal.date, cum_loss]
+         proj_loss.push(data)
       end
 
-      @cum_consumed = [
-         {name: "Cumulative Calories Consumed", data: cals_consumed}
+      @milestone_data = [
+         {name: "Projected Cumulative Weight Lost (lbs)", data: proj_loss}
       ]
 
-      @cum_deficit = [
-         {name: "Cumulative Calorie Deficit", data: cals_deficit}
+      @cum_data = [
+         {name: "Cumulative Calorie Deficit", data: cals_deficit},
+         {name: "Cumulative Calories Consumed", data: cals_consumed}
       ]
 
       render('calories/dashboard.html.erb')
