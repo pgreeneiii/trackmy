@@ -11,8 +11,6 @@ gem  'pry-rails'
 
 gem 'devise'
 
-gem 'bcrypt', platforms: :ruby
-
 gem 'chartkick'
 
 gem 'highcharts-rails'
@@ -56,6 +54,8 @@ group :development do
   # Access an IRB console on exception pages or by using <%= console %> anywhere in the code.
   gem 'web-console', '>= 3.3.0'
 
+  gem 'bcrypt', platforms: :ruby
+
   # Use sqlite3 as the database for Active Record
   gem 'sqlite3'
 end
@@ -63,7 +63,6 @@ end
 group :production do
 
    gem "pg"
-   gem "rails_12factor"
 
 end
 
