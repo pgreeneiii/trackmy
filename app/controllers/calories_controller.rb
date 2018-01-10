@@ -10,19 +10,12 @@ class CaloriesController < ApplicationController
       proj_loss = []
       cum_cals = 0
       cum_def = 0
-      cum_loss = 0
-      milestone = 0
 
       cals.each do |cal|
          cum_cals += cal.consumed
          cum_def += cal.deficit
-         milestone += cal.deficit
+         cum_loss = cum_def / 3500
 
-
-         if milestone >= 3500
-            milestone = 3500-milestone
-            cum_loss += 1
-         end
 
          data = [cal.date, cum_cals]
          cals_consumed.push(data)
