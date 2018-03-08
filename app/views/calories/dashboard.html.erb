@@ -16,26 +16,23 @@
       <h1> Input New Log </h1>
       <%= render partial: 'log', locals: {calorie: @calorie} %>
    </div>
-   <div class=" col-md-offset-1 col-md-4 mt-3">
-      <h4>Current TDEE: <%= current_user.calories.order(date: :asc).last.tdee %> </h4>
-      <h4>Current Logged Weight: <%= current_user.calories.order(date: :asc).last.weight %></h4>
-      <h4>Lbs. Lost: <%= (current_user.calories.order(date: :asc).first.weight - current_user.calories.order(date: :asc).last.weight).round(1) %></h4>
-      <h4>Lbs. to Goal Weight: <%= (current_user.calories.order(date: :asc).last.weight-185).round(1) %></h4>
-      <h4>Average Calories / Day: <%= current_user.calories.average(:consumed).to_f.round(0) %></h4>
-      <h4>Trending for Goal Weight in:
+   <% if current_user.calories.present? %>
+      <div class=" col-md-offset-1 col-md-4 mt-3">
+         <h4>Current TDEE: <%= current_user.calories.order(date: :asc).last.tdee %> </h4>
+         <h4>Current Logged Weight: <%= current_user.calories.order(date: :asc).last.weight %></h4>
+         <h4>Lbs. Lost: <%= (current_user.calories.order(date: :asc).first.weight - current_user.calories.order(date: :asc).last.weight).round(1) %></h4>
+         <h4>Lbs. to Goal Weight: <%= (current_user.calories.order(date: :asc).last.weight-185).round(1) %></h4>
+         <h4>Average Calories / Day: <%= current_user.calories.average(:consumed).to_f.round(0) %></h4>
+         <h4>Trending for Goal Weight in:
 
-         <%= ((current_user.calories.order(date: :asc).last.weight-185)*(3500/(current_user.calories.order(date: :asc).last.tdee-current_user.calories.average(:consumed).to_f.round(0)))).round(0) %>
-         days
-         <%= (Date.today+((current_user.calories.order(date: :asc).last.weight-185)*(3500/(current_user.calories.order(date: :asc).last.tdee-current_user.calories.average(:consumed).to_f.round(0))))).strftime("on %B %d, %Y") %>
-      </h4>
-      <h4>Logging Since: <%= current_user.calories.order(date: :asc).first.date.strftime("%B %d, %Y") %></h4>
-      <h4>Logs Missed: <%= ((Time.new-current_user.calories.order(date: :asc).first.date)/86400).round(0)-current_user.calories.count %></h4>
+            <%= ((current_user.calories.order(date: :asc).last.weight-185)*(3500/(current_user.calories.order(date: :asc).last.tdee-current_user.calories.average(:consumed).to_f.round(0)))).round(0) %>
+            days
+            <%= (Date.today+((current_user.calories.order(date: :asc).last.weight-185)*(3500/(current_user.calories.order(date: :asc).last.tdee-current_user.calories.average(:consumed).to_f.round(0))))).strftime("on %B %d, %Y") %>
+         </h4>
+         <h4>Logging Since: <%= current_user.calories.order(date: :asc).first.date.strftime("%B %d, %Y") %></h4>
+         <h4>Logs Missed: <%= ((Time.new-current_user.calories.order(date: :asc).first.date)/86400).round(0)-current_user.calories.count %></h4>
 
-
-
-
-
-
-   </div>
+      </div>
+   <% end %>
 
 </div>
