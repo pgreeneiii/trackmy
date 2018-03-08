@@ -9,14 +9,11 @@ class CaloriesController < ApplicationController
       cals_deficit = []
       daily_cals = []
       proj_loss = []
-      cum_cals = 0
-      cum_def = 0
-
 
       cals.each do |cal|
-         cum_cals += cal.consumed
-         cum_def += cal.deficit
-         cum_loss = cum_def / 3500
+         cum_cals = cal.cumulative_cals
+         cum_def = cal.cumulative_deficit
+         cum_loss = cal.proj_loss
 
 
          data = [cal.date, cum_cals]
@@ -48,88 +45,116 @@ class CaloriesController < ApplicationController
       render('calories/dashboard.html.erb')
    end
 
-  def index
-    @calories = Calorie.all
+   def index
+      @calories = Calorie.all
 
-    render("calories/index.html.erb")
-  end
+      render("calories/index.html.erb")
+   end
 
-  def show
-    @calorie = Calorie.find(params[:id])
+   def show
+      @calorie = Calorie.find(params[:id])
 
-    render("calories/show.html.erb")
-  end
+      render("calories/show.html.erb")
+   end
 
-  def new
-    @calorie = Calorie.new
+   def new
+      @calorie = Calorie.new
 
-    render("calories/new.html.erb")
-  end
-
-  def create
-    @calorie = Calorie.new
-
-    @calorie.user_id = params[:user_id]
-    @calorie.consumed = params[:consumed]
-
-    if current_user.tdee != nil
-         deficit = current_user.tdee - @calorie.consumed
-      else
-         deficit = 0
-    end
-
-    @calorie.deficit = deficit
-    @calorie.date = params[:date]
-
-    save_status = @calorie.save
-
-    if save_status == true
-      redirect_to("/calories/dashboard", :notice => "Calorie added successfully.")
-    else
       render("calories/new.html.erb")
-    end
-  end
+   end
 
-  def edit
-    @calorie = Calorie.find(params[:id])
+   def create
+      @calorie = Calorie.new
+      if current_user.calories.present?
+         if current_user.calories.order(date: :asc).last.date < params[:date]
+            last_calorie = current_user.calories.order(date: :asc).last
+         else
+            current_user.calories.order(date: :asc).each do |calorie|
+               if calorie.date < params[:date]
+                  last_calorie = calorie
+               end
+            end
+         end
+      end
 
-    render("calories/edit.html.erb")
-  end
+      @calorie.user_id = params[:user_id]
+      @calorie.consumed = params[:consumed]
 
-  def update
-    @calorie = Calorie.find(params[:id])
+      if current_user.calories.present?
+         if params[:weight].empty?
+            @calorie.weight = last_calorie.weight
+         else
+            @calorie.weight = params[:weight]
+         end
+      else
+         @calorie.weight = params[:weight]
+      end
 
-    @calorie.user_id = params[:user_id]
-    @calorie.consumed = params[:consumed]
+      @calorie.tdee = @calorie.calculate_tdee(current_user.height, current_user.age, current_user.activity)
 
-    if current_user.tdee != nil
+      @calorie.deficit = @calorie.tdee - @calorie.consumed
+
+      if current_user.calories.present?
+         @calorie.cumulative_cals = last_calorie.cumulative_cals + @calorie.consumed
+         @calorie.cumulative_deficit = last_calorie.cumulative_deficit + @calorie.deficit
+      else
+         @calorie.cumulative_cals = @calorie.consumed
+         @calorie.cumulative_deficit = @calorie.deficit
+      end
+
+      @calorie.proj_loss = @calorie.cumulative_deficit/3500
+
+      @calorie.date = params[:date]
+
+      save_status = @calorie.save
+
+      if save_status == true
+         redirect_to("/calories/dashboard", :notice => "Calorie added successfully.")
+      else
+         render("calories/new.html.erb")
+      end
+   end
+
+   def edit
+      @calorie = Calorie.find(params[:id])
+
+      render("calories/edit.html.erb")
+   end
+
+   def update
+      @calorie = Calorie.find(params[:id])
+
+      @calorie.user_id = params[:user_id]
+      @calorie.consumed = params[:consumed]
+
+      if current_user.tdee != nil
          deficit = current_user.tdee - @calorie.consumed
       else
          deficit = 0
-    end
+      end
 
-    @calorie.deficit = deficit
+      @calorie.deficit = deficit
 
-    @calorie.date = params[:date]
+      @calorie.date = params[:date]
 
-    save_status = @calorie.save
+      save_status = @calorie.save
 
-    if save_status == true
-      redirect_to("/calories/#{@calorie.id}", :notice => "Calorie updated successfully.")
-    else
-      render("calories/edit.html.erb")
-    end
-  end
+      if save_status == true
+         redirect_to("/calories/#{@calorie.id}", :notice => "Calorie updated successfully.")
+      else
+         render("calories/edit.html.erb")
+      end
+   end
 
-  def destroy
-    @calorie = Calorie.find(params[:id])
+   def destroy
+      @calorie = Calorie.find(params[:id])
 
-    @calorie.destroy
+      @calorie.destroy
 
-    if URI(request.referer).path == "/calories/#{@calorie.id}"
-      redirect_to("/", :notice => "Calorie deleted.")
-    else
-      redirect_back(:fallback_location => "/", :notice => "Calorie deleted.")
-    end
-  end
+      if URI(request.referer).path == "/calories/#{@calorie.id}"
+         redirect_to("/", :notice => "Calorie deleted.")
+      else
+         redirect_back(:fallback_location => "/", :notice => "Calorie deleted.")
+      end
+   end
 end
