@@ -24,9 +24,12 @@
       <h4>Trending for Goal Weight in:
 
          <%= ((current_user.calories.order(date: :asc).last.weight-185)*(3500/(current_user.calories.order(date: :asc).last.tdee-current_user.calories.average(:consumed).to_f.round(0)))).round(0) %>
-         days on
-         <%= Date.today+((current_user.calories.order(date: :asc).last.weight-185)*(3500/(current_user.calories.order(date: :asc).last.tdee-current_user.calories.average(:consumed).to_f.round(0)))) %>
+         days
+         <%= (Date.today+((current_user.calories.order(date: :asc).last.weight-185)*(3500/(current_user.calories.order(date: :asc).last.tdee-current_user.calories.average(:consumed).to_f.round(0))))).strftime("on %B %d, %Y") %>
       </h4>
+      <h4>Logging Since: <%= current_user.calories.order(date: :asc).first.date.strftime("%B %d, %Y") %></h4>
+      <h4>Logs Missed: <%= ((Time.new-current_user.calories.order(date: :asc).first.date)/86400).round(0)-current_user.calories.count %></h4>
+
 
 
 
