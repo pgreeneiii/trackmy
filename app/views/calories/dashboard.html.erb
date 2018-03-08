@@ -7,6 +7,10 @@
       <div class="mb-2">
          <%= line_chart @milestone_data, title: 'Cumulative Projected Weight Loss' %>
       </div>
+
+      <div class="mb-2">
+         <%= column_chart @daily_data, title: 'Daily Calorie Consumption' %>
+      </div>
    </div>
    <div class=" col-md-offset-1 col-md-4">
       <h1> Input New Log </h1>

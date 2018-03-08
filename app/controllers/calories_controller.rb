@@ -7,9 +7,11 @@ class CaloriesController < ApplicationController
 
       cals_consumed = []
       cals_deficit = []
+      daily_cals = []
       proj_loss = []
       cum_cals = 0
       cum_def = 0
+
 
       cals.each do |cal|
          cum_cals += cal.consumed
@@ -25,6 +27,9 @@ class CaloriesController < ApplicationController
 
          data = [cal.date, cum_loss]
          proj_loss.push(data)
+
+         data = [cal.date, cal.consumed]
+         daily_cals.push(data)
       end
 
       @milestone_data = [
@@ -34,6 +39,10 @@ class CaloriesController < ApplicationController
       @cum_data = [
          {name: "Cumulative Calorie Deficit", data: cals_deficit},
          {name: "Cumulative Calories Consumed", data: cals_consumed}
+      ]
+
+      @daily_data = [
+         {name: "Calories Consumed per Day", data: daily_cals}
       ]
 
       render('calories/dashboard.html.erb')
