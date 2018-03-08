@@ -16,7 +16,7 @@ class CaloriesController < ApplicationController
          cum_cals = cal.cumulative_cals
          cum_def = cal.cumulative_deficit
          cum_loss = cal.proj_loss
-         weight_lost = starting_weight - cal.weight
+         weight_lost = (starting_weight - cal.weight).round(1)
 
 
          data = [cal.date, cum_cals]
