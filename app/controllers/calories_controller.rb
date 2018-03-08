@@ -9,7 +9,11 @@ class CaloriesController < ApplicationController
       cals_deficit = []
       daily_cals = []
       proj_loss = []
-      starting_weight = cals.first.weight
+      if cals.present?
+         starting_weight = cals.first.weight
+      else
+         starting_weight = 0
+      end
       cum_weight_loss = []
 
       cals.each do |cal|
