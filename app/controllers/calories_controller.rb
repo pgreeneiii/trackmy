@@ -9,11 +9,14 @@ class CaloriesController < ApplicationController
       cals_deficit = []
       daily_cals = []
       proj_loss = []
+      starting_weight = cals.first.weight
+      cum_weight_loss = []
 
       cals.each do |cal|
          cum_cals = cal.cumulative_cals
          cum_def = cal.cumulative_deficit
          cum_loss = cal.proj_loss
+         weight_lost = starting_weight - cal.weight
 
 
          data = [cal.date, cum_cals]
@@ -27,10 +30,14 @@ class CaloriesController < ApplicationController
 
          data = [cal.date, cal.consumed]
          daily_cals.push(data)
+
+         data = [cal.date, weight_lost]
+         cum_weight_loss.push(data)
       end
 
       @milestone_data = [
-         {name: "Projected Cumulative Weight Lost (lbs)", data: proj_loss}
+         {name: "Projected Cumulative Weight Lost (lbs)", data: proj_loss},
+         {name: "Actual Weight Lost (lbs)", data: cum_weight_loss}
       ]
 
       @cum_data = [
